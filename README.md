@@ -58,7 +58,7 @@ Este é um projeto Java desenvolvido com Maven e Java 21, utilizando o banco de 
 
 ### Passos
 - Abra o terminal e execute o seguinte comando para clonar o repositório:
-  `git clone <URL_DO_REPOSITORIO>`
+  `git clone https://github.com/JeanJerri/desafio-app-gerenciamento-agilstore.git`
 - Abra o IntelliJ IDEA.
 - Selecione `File -> Open` e navegue até o diretório onde você clonou o repositório.
 - Selecione a pasta gerenciamento_agilstore e clique em OK.
