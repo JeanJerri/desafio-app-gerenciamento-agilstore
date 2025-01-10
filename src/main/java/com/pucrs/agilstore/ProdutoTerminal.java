@@ -1,5 +1,6 @@
 package com.pucrs.agilstore;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pucrs.agilstore.enums.Categoria;
 import com.pucrs.agilstore.model.Produto;
 import com.pucrs.agilstore.service.ProdutoService;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +17,8 @@ import java.util.Scanner;
 
 @Component
 public class ProdutoTerminal {
+
+    private static final String ARQUIVO_JSON = "produtos.json";
 
     private final ProdutoService produtoService;
     private final Scanner scanner;
@@ -70,6 +75,17 @@ public class ProdutoTerminal {
                 default:
                     System.out.println("Opção Inválida! Digite um número entre 0 e 5.");
             }
+        }
+    }
+
+    private void salvarProdutosEmArquivo() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<Produto> produtos = produtoService.findAll();
+            objectMapper.writeValue(new File(ARQUIVO_JSON), produtos);
+            System.out.println("Dados salvos no arquivo JSON com sucesso.");
+        } catch (IOException e) {
+            System.err.println("Erro ao salvar os dados no arquivo JSON: " + e.getMessage());
         }
     }
 
@@ -166,6 +182,7 @@ public class ProdutoTerminal {
         }
 
         produtoService.deletar(id);
+        salvarProdutosEmArquivo();
         System.out.println("Produto excluído com sucesso!");
     }
 
@@ -272,6 +289,7 @@ public class ProdutoTerminal {
                 System.out.print("Preço: ");
                 if (scanner.hasNextBigDecimal()) {
                     preco = scanner.nextBigDecimal();
+                    scanner.nextLine();
                     if (preco.compareTo(BigDecimal.ZERO) < 0) {
                         System.out.println("O preço não pode ser negativo. Tente novamente.");
                         preco = null;
@@ -284,8 +302,8 @@ public class ProdutoTerminal {
             produto.setPreco(preco);
         }
 
-        scanner.nextLine();
         produtoService.salvar(produto);
+        salvarProdutosEmArquivo();
         System.out.println("Produto atualizado com sucesso!");
     }
 
@@ -387,6 +405,7 @@ public class ProdutoTerminal {
 
         Produto produto = new Produto(nome, categoria, quantidade, preco);
         produtoService.salvar(produto);
+        salvarProdutosEmArquivo();
         System.out.println("Produto adicionado com sucesso!");
     }
 
